@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.routes import notes, folders, tags
+from app.api.routes import folders, notes, tags
 
 api_router = APIRouter()
 

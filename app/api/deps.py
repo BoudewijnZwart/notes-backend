@@ -1,13 +1,14 @@
-from typing import Annotated
 from collections.abc import Generator
+from typing import Annotated
+
 from fastapi import Depends
 from sqlmodel import Session
-
 
 from app.database import engine
 
 
-def get_db() -> Generator[Session, None, None]:
+def get_db() -> Generator[Session]:
+    """Yield a session to the database."""
     with Session(engine) as session:
         yield session
 

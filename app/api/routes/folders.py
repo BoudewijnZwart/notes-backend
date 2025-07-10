@@ -12,7 +12,6 @@ router = APIRouter(prefix="/folders", tags=["folders"])
 @router.get("/", response_model=list[FolderPublic])
 async def get_all_folders(session: SessionDep) -> Any:
     """Endpoint to get all folders."""
-
     statement = select(Folder)
     return session.exec(statement).all()
 
@@ -20,7 +19,6 @@ async def get_all_folders(session: SessionDep) -> Any:
 @router.post("/")
 async def create_folder(folder_request: FolderNew, session: SessionDep) -> None:
     """Endpoint to create a folder."""
-
     new_folder = Folder(**folder_request.model_dump())
 
     session.add(new_folder)

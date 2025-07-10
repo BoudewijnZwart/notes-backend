@@ -1,16 +1,16 @@
-from sqlmodel import Session, select
-from fastapi import status, HTTPException
 
-from app.models.notes import Note
+from fastapi import HTTPException, status
+from sqlmodel import Session, SQLModel
 
 
-def get_note_by_id(session: Session, note_id: int) -> Note | None:
-    statement = select(Note).where(Note.id == note_id)
-    note = session.exec(statement).first()
-
-    if note is None:
+def get_object_or_404[T = SQLModel](
+    obj_type: type[T], obj_id: int, session: Session,
+) -> T:
+    """Get an object by primary key if it exists."""
+    if (obj := session.get(obj_type, obj_id)) is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="No note found with that id."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Nothing found with that id.",
         )
 
-    return note
+    return obj
