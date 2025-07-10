@@ -3,27 +3,26 @@ from typing import Any
 from fastapi import APIRouter, status, Path
 
 from app.api.deps import SessionDep
-from app.models.notes import Note
-from app.schemas.notes import NoteResponse, NotesResponse, NoteNew
+from app.models.notes import Note, NoteNew, NotePublic
 from app.crud import get_note_by_id
+from sqlmodel import select
 
 router = APIRouter(prefix="/notes", tags=["notes"])
 
 
-@router.get("/{note_id}", response_model=NoteResponse)
+@router.get("/{note_id}", response_model=NotePublic)
 async def get_note(session: SessionDep, note_id: int = Path(gt=0)) -> Any:
     """Endpoint to get a note by id."""
 
     return get_note_by_id(session, note_id)
 
 
-@router.get("/", response_model=NotesResponse)
+@router.get("/", response_model=list[NotePublic])
 async def get_all_notes(session: SessionDep) -> Any:
     """Endpoint to get all notes."""
 
-    data = session.query(Note).all()
-    count = len(data)
-    return {"data": data, "count": count}
+    statement = select(Note)
+    return session.exec(statement).all()
 
 
 @router.post("/create", status_code=status.HTTP_201_CREATED)

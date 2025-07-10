@@ -1,11 +1,12 @@
-from sqlalchemy.orm import Session
+from sqlmodel import Session, select
 from fastapi import status, HTTPException
 
 from app.models.notes import Note
 
 
 def get_note_by_id(session: Session, note_id: int) -> Note | None:
-    note = session.query(Note).filter(Note.id == note_id).first()
+    statement = select(Note).where(Note.id == note_id)
+    note = session.exec(statement).first()
 
     if note is None:
         raise HTTPException(
