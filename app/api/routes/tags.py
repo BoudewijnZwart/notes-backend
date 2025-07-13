@@ -4,8 +4,9 @@ from fastapi import APIRouter
 from sqlmodel import select
 
 from app.api.deps import SessionDep
+from app.api.schemas.tags import TagNew, TagPublic
 from app.crud import get_tag_by_parent_and_name
-from app.models.tags import Tag, TagNew, TagPublic
+from app.models.tables import Tag
 
 router = APIRouter(prefix="/tags", tags=["tags"])
 

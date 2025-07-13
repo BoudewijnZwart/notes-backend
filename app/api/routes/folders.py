@@ -4,7 +4,8 @@ from fastapi import APIRouter
 from sqlmodel import select
 
 from app.api.deps import SessionDep
-from app.models.folders import Folder, FolderNew, FolderPublic
+from app.api.schemas.folders import FolderNew, FolderPublic
+from app.models.tables import Folder
 
 router = APIRouter(prefix="/folders", tags=["folders"])
 

@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from sqlmodel import Session, SQLModel, select
 
-from app.models.tags import Tag
+from app.models.tables import Tag
 
 
 def get_object_or_404[T = SQLModel](

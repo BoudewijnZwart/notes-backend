@@ -4,8 +4,9 @@ from fastapi import APIRouter, Path, status
 from sqlmodel import select
 
 from app.api.deps import SessionDep
+from app.api.schemas.notes import NoteNew, NotePublic
 from app.crud import get_object_or_404
-from app.models.notes import Note, NoteNew, NotePublic
+from app.models.tables import Note
 
 router = APIRouter(prefix="/notes", tags=["notes"])
 
