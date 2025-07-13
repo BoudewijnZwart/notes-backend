@@ -1,10 +1,13 @@
-
 from fastapi import HTTPException, status
-from sqlmodel import Session, SQLModel
+from sqlmodel import Session, SQLModel, select
+
+from app.models.tags import Tag
 
 
 def get_object_or_404[T = SQLModel](
-    obj_type: type[T], obj_id: int, session: Session,
+    obj_type: type[T],
+    obj_id: int,
+    session: Session,
 ) -> T:
     """Get an object by primary key if it exists."""
     if (obj := session.get(obj_type, obj_id)) is None:
@@ -14,3 +17,13 @@ def get_object_or_404[T = SQLModel](
         )
 
     return obj
+
+
+def get_tag_by_parent_and_name(
+    parent_id: int | None,
+    name: str,
+    session: Session,
+) -> Tag | None:
+    """Search for a tag with a specific parent."""
+    statement = select(Tag).where(Tag.parent_id == parent_id, Tag.name == name)
+    return session.exec(statement).first()

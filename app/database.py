@@ -1,9 +1,9 @@
 from sqlmodel import SQLModel, create_engine
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./database.db"
+from app.config import settings
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
+    settings.DATABASE_URL,
     connect_args={"check_same_thread": False},
 )
 

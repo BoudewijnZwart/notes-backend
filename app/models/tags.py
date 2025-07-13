@@ -9,7 +9,6 @@ class TagBase(SQLModel):
     """Base model for a tag."""
 
 
-
 class Tag(TagBase, table=True):
     """Represents a tag used to group notes."""
 
@@ -26,7 +25,7 @@ class Tag(TagBase, table=True):
         """Get the full name of a tag."""
         full_name = self.name
         if self.parent_tag is not None:
-            full_name += self.parent_tag.get_full_name()
+            full_name = self.parent_tag.get_full_name() + "/" + full_name
         return full_name
 
     @staticmethod
