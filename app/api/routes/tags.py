@@ -8,7 +8,9 @@ from app.api.schemas.tags import TagNew, TagPublic
 from app.crud import get_tag_by_parent_and_name
 from app.models.tables import Tag
 
-router = APIRouter(prefix="/tags", tags=["tags"])
+TAG_ROUTE_PREFIX = "/tags"
+
+router = APIRouter(prefix=TAG_ROUTE_PREFIX, tags=["tags"])
 
 
 @router.get("/", response_model=list[TagPublic])

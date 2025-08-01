@@ -7,7 +7,9 @@ from app.api.deps import SessionDep
 from app.api.schemas.folders import FolderNew, FolderPublic
 from app.models.tables import Folder
 
-router = APIRouter(prefix="/folders", tags=["folders"])
+FOLDER_ROUTE_PREFIX = "/folders"
+
+router = APIRouter(prefix=FOLDER_ROUTE_PREFIX, tags=["folders"])
 
 
 @router.get("/", response_model=list[FolderPublic])

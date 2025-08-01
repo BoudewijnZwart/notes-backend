@@ -8,14 +8,14 @@ from app.models.basemodels import FolderBase, NoteBase, TagBase
 from app.shared.constants import MAX_NAME_LEN, MIN_NAME_LEN
 
 
-class NoteTagLink(SQLModel, table=True):
+class NoteTagLink(SQLModel, table=True):  # type: ignore[call-arg]
     """Link between a note and a tag."""
 
     note_id: int | None = Field(foreign_key="note.id", primary_key=True)
     tag_id: int | None = Field(foreign_key="tag.id", primary_key=True)
 
 
-class Note(NoteBase, table=True):
+class Note(NoteBase, table=True):  # type: ignore[call-arg]
     """Representation of a note."""
 
     id: int | None = Field(primary_key=True, default=None)
@@ -25,7 +25,7 @@ class Note(NoteBase, table=True):
     )
 
 
-class Folder(FolderBase, table=True):
+class Folder(FolderBase, table=True):  # type: ignore[call-arg]
     """Representation of a folder to group notes."""
 
     id: int | None = Field(primary_key=True, default=None)
@@ -37,7 +37,7 @@ class Folder(FolderBase, table=True):
     child_folders: list["Folder"] = Relationship(back_populates="parent")
 
 
-class Tag(TagBase, table=True):
+class Tag(TagBase, table=True):  # type: ignore[call-arg]
     """Represents a tag used to group notes."""
 
     id: int | None = Field(primary_key=True, default=None)

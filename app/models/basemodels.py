@@ -6,7 +6,7 @@ class NoteBase(SQLModel):
 
     title: str = Field()
     body: str = Field()
-    folder: int | None = Field(
+    folder_id: int | None = Field(
         foreign_key="folder.id",
         default=None,
         ondelete="CASCADE",

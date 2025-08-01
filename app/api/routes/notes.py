@@ -6,9 +6,11 @@ from sqlmodel import select
 from app.api.deps import SessionDep
 from app.api.schemas.notes import NoteNew, NotePublic
 from app.crud import get_object_or_404
-from app.models.tables import Note
+from app.models.tables import Note, Tag
 
-router = APIRouter(prefix="/notes", tags=["notes"])
+NOTES_ROUTE_PREFIX = "/notes"
+
+router = APIRouter(prefix=NOTES_ROUTE_PREFIX, tags=["notes"])
 
 
 @router.get("/{note_id}", response_model=NotePublic)
@@ -21,13 +23,20 @@ async def get_note(note_id: Annotated[int, Path(gt=0)], session: SessionDep) -> 
 async def get_all_notes(session: SessionDep) -> Any:
     """Endpoint to get all notes."""
     statement = select(Note)
-    return session.exec(statement).all()
+    notes = session.exec(statement).all()
+    return [NotePublic.from_note(note) for note in notes]
 
 
-@router.post("/create", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_note(session: SessionDep, note_request: NoteNew) -> Any:
     """Endpoint to create a new note."""
-    note = Note(**note_request.model_dump())
+    post_body = note_request.model_dump()
+
+    # If the request contains tag ids, fetch the tags from the database
+    if len(tag_ids := post_body.pop("tag_ids", [])) > 0:
+        post_body["tags"] = [session.get(Tag, tag_id) for tag_id in tag_ids]
+
+    note = Note(**post_body)
 
     session.add(note)
     session.commit()
