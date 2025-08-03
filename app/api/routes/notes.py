@@ -16,7 +16,8 @@ router = APIRouter(prefix=NOTES_ROUTE_PREFIX, tags=["notes"])
 @router.get("/{note_id}", response_model=NotePublic)
 async def get_note(note_id: Annotated[int, Path(gt=0)], session: SessionDep) -> Any:
     """Endpoint to get a note by id."""
-    return get_object_or_404(Note, note_id, session)
+    note = get_object_or_404(Note, note_id, session)
+    return NotePublic.from_note(note)
 
 
 @router.get("/", response_model=list[NotePublic])
