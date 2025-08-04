@@ -7,7 +7,7 @@ from sqlmodel import Session, select
 
 from app.api.routes.notes import NOTES_ROUTE_PREFIX
 from app.models.tables import Folder, Note
-from app.models.tests.factories import NoteFactory, TagFactory
+from tests.models.factories import NoteFactory, TagFactory
 
 
 @pytest.fixture(name="post_body_simple")

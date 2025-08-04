@@ -5,8 +5,8 @@ from sqlmodel import select
 
 from app.api.deps import SessionDep
 from app.api.schemas.folders import FolderNew, FolderPublic
-from app.models.tables import Folder
 from app.crud import get_object_or_404
+from app.models.tables import Folder
 
 FOLDER_ROUTE_PREFIX = "/folders"
 
@@ -16,8 +16,8 @@ router = APIRouter(prefix=FOLDER_ROUTE_PREFIX, tags=["folders"])
 @router.get("/{folder_id}", response_model=FolderPublic)
 async def get_folder_by_id(folder_id: int, session: SessionDep) -> Any:
     """Endpoint to get a folder by ID."""
-    folder = get_object_or_404(Folder, folder_id, session)
-    return folder
+    return get_object_or_404(Folder, folder_id, session)
+
 
 @router.get("/", response_model=list[FolderPublic])
 async def get_all_folders(session: SessionDep) -> Any:

@@ -5,19 +5,20 @@ from sqlmodel import select
 
 from app.api.deps import SessionDep
 from app.api.schemas.tags import TagNew, TagPublic
-from app.crud import get_tag_by_parent_and_name
+from app.crud import get_object_or_404, get_tag_by_parent_and_name
 from app.models.tables import Tag
-from app.crud import get_object_or_404
 
 TAG_ROUTE_PREFIX = "/tags"
 
 router = APIRouter(prefix=TAG_ROUTE_PREFIX, tags=["tags"])
+
 
 @router.get("/{tag_id}", response_model=TagPublic)
 async def get_tag(tag_id: int, session: SessionDep) -> Tag:
     """Endpoint to get a tag by ID."""
     tag = get_object_or_404(Tag, tag_id, session)
     return TagPublic.from_tag(tag)
+
 
 @router.get("/", response_model=list[TagPublic])
 async def get_all_tags(session: SessionDep) -> Any:

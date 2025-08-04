@@ -1,13 +1,14 @@
-from fastapi.testclient import TestClient
-from fastapi import status
-from sqlmodel import select, Session
-
-from app.models.tables import Folder
-from app.api.routes.folders import FOLDER_ROUTE_PREFIX
-from app.models.tests.factories import FolderFactory
+from typing import Any
 
 import pytest
-from typing import Any
+from fastapi import status
+from fastapi.testclient import TestClient
+from sqlmodel import Session, select
+
+from app.api.routes.folders import FOLDER_ROUTE_PREFIX
+from app.models.tables import Folder
+from tests.models.factories import FolderFactory
+
 
 def test_get_folder_by_id(
     folder: Folder,
@@ -27,6 +28,7 @@ def test_get_folder_by_id(
     assert response_data["id"] == folder.id
     assert response_data["name"] == folder.name
 
+
 def test_get_all_folders(
     folder_factory: FolderFactory,
     client: TestClient,
@@ -44,9 +46,10 @@ def test_get_all_folders(
     # AND the response contains all the folders
     response_data = response.json()
     assert len(response_data) == len(folders)
-    for folder, response_folder in zip(folders, response_data):
+    for folder, response_folder in zip(folders, response_data, strict=False):
         assert response_folder["id"] == folder.id
         assert response_folder["name"] == folder.name
+
 
 @pytest.fixture(name="root_level_folder_data")
 def root_level_folder_data_fixture() -> dict[str, Any]:
@@ -59,10 +62,11 @@ def nested_folder_data_fixture(folder: Folder) -> dict[str, Any]:
     """Fixture to create data for a nested folder."""
     return {"name": "A nested folder", "parent_id": folder.id}
 
+
 @pytest.mark.parametrize(
     "post_body_fixture",
     [
-       "root_level_folder_data",
+        "root_level_folder_data",
         "nested_folder_data",
     ],
 )

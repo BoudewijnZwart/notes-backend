@@ -45,13 +45,5 @@ unfixable = []
 [tool.mypy]
 ignore_missing_imports = true
 follow_imports = "skip"
+files = ["app/"]
 
-
-
-# This excludes files from being type-checked
-exclude = '''(?x)(
-  .*/tests/*.
-)
-'''
-
-# ['.*/tests/*.', '^test.*', '^factories\.py']

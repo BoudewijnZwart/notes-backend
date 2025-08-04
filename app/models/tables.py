@@ -64,10 +64,9 @@ class Tag(TagBase, table=True):  # type: ignore[call-arg]
     def full_name_to_tag_names(full_name: str) -> list[str]:
         """Split a given full tag name into separate tag names."""
         seperate_names = [part for part in full_name.strip().split("/") if part]
-        cleaned_names = [Tag.clean_tag_name(name) for name in seperate_names]
-        return cleaned_names
-    
+        return [Tag.clean_tag_name(name) for name in seperate_names]
+
     @staticmethod
     def clean_tag_name(tag_name: str) -> str:
-        """Clean a tag name by removing leading/trailing whitespace and converting to lowercase."""
+        """Clean a tag name."""
         return tag_name.strip().lower()

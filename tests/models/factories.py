@@ -1,7 +1,7 @@
 import factory
 
-from app.factories import ModelFactory
 from app.models.tables import Folder, Note, Tag
+from tests.factories import ModelFactory
 
 
 class NoteFactory(ModelFactory):

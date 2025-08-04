@@ -1,7 +1,7 @@
 from sqlmodel import Session, select
 
 from app.models.tables import Tag
-from app.models.tests.factories import NoteFactory, TagFactory
+from tests.models.factories import NoteFactory, TagFactory
 
 
 def test_note_factory(note_factory: NoteFactory, session: Session) -> None:

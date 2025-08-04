@@ -1,13 +1,12 @@
 import pytest
+from fastapi import status
+from fastapi.testclient import TestClient
+from sqlmodel import Session, select
 
 from app.api.routes.tags import TAG_ROUTE_PREFIX
 from app.models.tables import Tag
-from fastapi import status
-from fastapi.testclient import TestClient
-from app.models.tests.factories import TagFactory
-from sqlmodel import Session, select
+from tests.models.factories import TagFactory
 
-from pytest import param
 
 def test_get_tag_by_id(
     tag: Tag,
@@ -27,6 +26,7 @@ def test_get_tag_by_id(
     assert response_data["id"] == tag.id
     assert response_data["name"] == tag.name
 
+
 def get_all_tags(
     tag_factory: TagFactory,
     client: TestClient,
@@ -44,7 +44,7 @@ def get_all_tags(
     # AND the response contains all the tags
     response_data = response.json()
     assert len(response_data) == len(tags)
-    for tag, response_tag in zip(tags, response_data):
+    for tag, response_tag in zip(tags, response_data, strict=False):
         assert response_tag["id"] == tag.id
         assert response_tag["name"] == tag.name
 
@@ -54,12 +54,28 @@ def existing_tag_fixture(tag_factory: TagFactory) -> Tag:
     """Fixture to create an existing tag."""
     return tag_factory.create(name="Existing Tag")
 
-@pytest.mark.parametrize(("post_body", "expected_tag_names"),[
-    param({"full_name": "Tag_1"}, ["tag_1"], id="simple root tag"),
-    param({"full_name": "Tag 2"}, ["tag 2"], id="simple root tag with space"),
-    param({"full_name": "root_tag/child_tag/2nd_child_tag"}, ["root_tag", "child_tag", "2nd_child_tag"], id="multiple tags that do not exist yet"),
-    param({"full_name": "existing_tag/child_tag"}, ["existing_tag", "child_tag"], id="existing tag with child tag"),
-])
+
+@pytest.mark.parametrize(
+    ("post_body", "expected_tag_names"),
+    [
+        pytest.param({"full_name": "Tag_1"}, ["tag_1"], id="simple root tag"),
+        pytest.param(
+            {"full_name": "Tag 2"},
+            ["tag 2"],
+            id="simple root tag with space",
+        ),
+        pytest.param(
+            {"full_name": "root_tag/child_tag/2nd_child_tag"},
+            ["root_tag", "child_tag", "2nd_child_tag"],
+            id="multiple tags that do not exist yet",
+        ),
+        pytest.param(
+            {"full_name": "existing_tag/child_tag"},
+            ["existing_tag", "child_tag"],
+            id="existing tag with child tag",
+        ),
+    ],
+)
 def test_create_tag(
     post_body: dict[str, str],
     expected_tag_names: list[str],
@@ -81,7 +97,7 @@ def test_create_tag(
     created_tags = session.exec(select(Tag)).all()
     created_tag_names = [tag.name for tag in created_tags]
     assert set(created_tag_names) == set(expected_tag_names)
-    
+
 
 def test_delete_tag(
     existing_tag: Tag,
