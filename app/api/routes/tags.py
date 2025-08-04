@@ -1,17 +1,23 @@
 from typing import Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 from sqlmodel import select
 
 from app.api.deps import SessionDep
 from app.api.schemas.tags import TagNew, TagPublic
 from app.crud import get_tag_by_parent_and_name
 from app.models.tables import Tag
+from app.crud import get_object_or_404
 
 TAG_ROUTE_PREFIX = "/tags"
 
 router = APIRouter(prefix=TAG_ROUTE_PREFIX, tags=["tags"])
 
+@router.get("/{tag_id}", response_model=TagPublic)
+async def get_tag(tag_id: int, session: SessionDep) -> Tag:
+    """Endpoint to get a tag by ID."""
+    tag = get_object_or_404(Tag, tag_id, session)
+    return TagPublic.from_tag(tag)
 
 @router.get("/", response_model=list[TagPublic])
 async def get_all_tags(session: SessionDep) -> Any:
@@ -22,7 +28,7 @@ async def get_all_tags(session: SessionDep) -> Any:
     return [TagPublic.from_tag(tag) for tag in tags]
 
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_tag(tag_request: TagNew, session: SessionDep) -> None:
     """Endpoint to create a tag."""
     tag_names = Tag.full_name_to_tag_names(tag_request.full_name)
@@ -41,3 +47,11 @@ async def create_tag(tag_request: TagNew, session: SessionDep) -> None:
             created_tags.append(tag_name)
         else:
             parent_id = possible_tag.id
+
+
+@router.delete("/{tag_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_tag(tag_id: int, session: SessionDep) -> None:
+    """Endpoint to delete a tag by ID."""
+    tag = get_object_or_404(Tag, tag_id, session)
+    session.delete(tag)
+    session.commit()
