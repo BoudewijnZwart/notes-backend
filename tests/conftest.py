@@ -7,7 +7,7 @@ from sqlmodel import Session
 
 from app.api.deps import get_db
 from app.main import app
-from app.test_config import engine
+from tests.test_config import engine
 from tests.models.factories import FolderFactory, NoteFactory, TagFactory, UserFactory
 
 # Register factories as fixtures
