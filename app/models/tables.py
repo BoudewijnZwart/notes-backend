@@ -1,7 +1,6 @@
 """All the database tables used in the application."""
 
 import uuid
-
 from typing import Optional
 
 from sqlmodel import Field, Relationship, SQLModel

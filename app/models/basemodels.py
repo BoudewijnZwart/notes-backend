@@ -1,5 +1,5 @@
-from sqlmodel import Field, SQLModel
 from pydantic import EmailStr
+from sqlmodel import Field, SQLModel
 
 
 class NoteBase(SQLModel):

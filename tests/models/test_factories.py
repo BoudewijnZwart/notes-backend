@@ -1,7 +1,7 @@
 from sqlmodel import Session, select
 
-from app.models.tables import Tag, User
-from tests.models.factories import NoteFactory, TagFactory, FolderFactory, UserFactory
+from app.models.tables import Folder, Tag, User
+from tests.models.factories import FolderFactory, NoteFactory, TagFactory, UserFactory
 
 
 def test_note_factory(note_factory: NoteFactory, session: Session) -> None:
@@ -26,19 +26,29 @@ def test_tag_factory(tag_factory: TagFactory, session: Session) -> None:
 
 
 def test_tag_factory_object(tag: Tag, session: Session) -> None:
-    del session
-    assert tag.name is not None
+    """Test the tag fixture created by the TagFactory."""
+    # GIVEN a tag created by the TagFactory
+
+    # WHEN the tag is retrieved from the database
+    tag_from_db = session.get(Tag, tag.id)
+
+    # THEN the tag should be in the database
+    assert tag_from_db is not None
+
+    # AND the tag should have the expected attributes
+    assert tag_from_db.name == tag.name
 
 
 def test_folder_factory(folder_factory: FolderFactory, session: Session) -> None:
+    """Test the creation of a folder using the FolderFactory."""
     # GIVEN a folder factory
 
     # WHEN a folder is created using the factory
     folder = folder_factory.create()
 
     # THEN the folder should have a name
-    assert folder.name is not None
-    assert folder.id is not None
+    folder_from_db = session.get(Folder, folder.id)
+    assert folder_from_db is not None
 
 
 def test_factory_objects_are_rolled_back(session: Session) -> None:
@@ -49,7 +59,7 @@ def test_factory_objects_are_rolled_back(session: Session) -> None:
 
 
 def test_user_factory(user_factory: UserFactory, session: Session) -> None:
-    """Test that the user factory creates a user with a hashed password."""
+    """Test the creation of a user using the UserFactory."""
     # GIVEN a user factory
 
     # WHEN a user is created using the factory
