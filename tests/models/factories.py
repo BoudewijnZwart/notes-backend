@@ -1,6 +1,6 @@
 import factory
 
-from app.models.tables import Folder, Note, Tag
+from app.models.tables import Folder, Note, Tag, User
 from tests.factories import ModelFactory
 
 
@@ -24,3 +24,16 @@ class FolderFactory(ModelFactory):
         model = Folder
 
     name = factory.Faker("word")
+
+
+class UserFactory(ModelFactory):
+    class Meta:
+        model = User
+
+    username = factory.Faker("user_name")
+    email = factory.Faker("email")
+    hashed_password = factory.Faker("password")
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
+    is_active = True
+    is_superuser = False

@@ -8,12 +8,13 @@ from sqlmodel import Session
 from app.api.deps import get_db
 from app.main import app
 from app.test_config import engine
-from tests.models.factories import FolderFactory, NoteFactory, TagFactory
+from tests.models.factories import FolderFactory, NoteFactory, TagFactory, UserFactory
 
 # Register factories as fixtures
 pytest_factoryboy.register(NoteFactory)
 pytest_factoryboy.register(TagFactory)
 pytest_factoryboy.register(FolderFactory)
+pytest_factoryboy.register(UserFactory)
 
 
 @pytest.fixture(name="session")

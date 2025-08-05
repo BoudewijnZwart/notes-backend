@@ -1,10 +1,12 @@
 """All the database tables used in the application."""
 
+import uuid
+
 from typing import Optional
 
 from sqlmodel import Field, Relationship, SQLModel
 
-from app.models.basemodels import FolderBase, NoteBase, TagBase
+from app.models.basemodels import FolderBase, NoteBase, TagBase, UserBase
 from app.shared.constants import MAX_NAME_LEN, MIN_NAME_LEN
 
 
@@ -23,6 +25,7 @@ class Note(NoteBase, table=True):  # type: ignore[call-arg]
         back_populates="notes",
         link_model=NoteTagLink,
     )
+    owner_id: uuid.UUID | None = Field(foreign_key="user.id")
 
 
 class Folder(FolderBase, table=True):  # type: ignore[call-arg]
@@ -70,3 +73,10 @@ class Tag(TagBase, table=True):  # type: ignore[call-arg]
     def clean_tag_name(tag_name: str) -> str:
         """Clean a tag name."""
         return tag_name.strip().lower()
+
+
+class User(UserBase, table=True):  # type: ignore[call-arg]
+    """Represents a user."""
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    hashed_password: str
