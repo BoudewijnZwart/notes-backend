@@ -7,3 +7,9 @@ lint:
 
 format:
 	ruff format
+
+build:
+	podman build -t notes-backend .
+
+run-image:
+	podman run -d -p 8000:8000 notes-backend
