@@ -28,4 +28,16 @@ class UserPublic(UserBase):
     """Schema for a public user."""
 
     id: uuid.UUID
-    hashed_password: str
+    is_active: bool
+
+    @classmethod
+    def from_user(cls, user: User) -> "UserPublic":
+        """Create a UserPublic from a User object."""
+        return cls(
+            id=user.id,
+            email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            is_active=user.is_active,
+            is_superuser=user.is_superuser,
+        )

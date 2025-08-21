@@ -7,7 +7,54 @@ from sqlmodel import Session, select
 
 from app.api.routes.users import USERS_ROUTE_PREFIX
 from app.models.tables import User
+from tests.models.factories import UserFactory
 from tests.typedefs import Outcome
+
+
+def test_get_user(user: User, client: TestClient) -> None:
+    """Test get endpoint to get a user by ID."""
+    # GIVEN a user in the database
+
+    # AND a client
+
+    # WHEN a get request is made to the endpoint
+    response = client.get(f"{USERS_ROUTE_PREFIX}/{user.id}")
+
+    # THEN the correct status code is returned
+    assert response.status_code == status.HTTP_200_OK
+
+    # AND the response data matches the user data
+    response_body = response.json()
+    assert response_body["id"] == str(user.id)
+    assert response_body["email"] == user.email
+    assert response_body["first_name"] == user.first_name
+    assert response_body["last_name"] == user.last_name
+    assert response_body["is_active"] == user.is_active
+
+
+def test_get_multiple_users(
+    user_factory: type[UserFactory], client: TestClient,
+) -> None:
+    """Test get endpoint to get multiple users."""
+    # GIVEN multiple users in the database
+    users = user_factory.create_batch(5)
+
+    # WHEN a get request is made to the endpoint
+    response = client.get(USERS_ROUTE_PREFIX)
+
+    # THEN the correct status code is returned
+    assert response.status_code == status.HTTP_200_OK
+
+    # AND the response data matches the user data
+    response_body = response.json()
+    assert len(response_body) == len(users)
+    for user_data in response_body:
+        user = next((u for u in users if str(u.id) == user_data["id"]), None)
+        assert user is not None
+        assert user_data["email"] == user.email
+        assert user_data["first_name"] == user.first_name
+        assert user_data["last_name"] == user.last_name
+        assert user_data["is_active"] == user.is_active
 
 
 @pytest.mark.parametrize(
@@ -72,3 +119,21 @@ def test_create_user(
             assert user is not None
         case Outcome.FAILURE:
             assert user is None
+
+
+def test_delete_user(user: User, client: TestClient, session: Session) -> None:
+    """Test deleting a user using a DELETE request."""
+    # GIVEN a user in the database
+
+    # AND a client
+
+    # WHEN a delete request is sent to the delete endpoint
+    response = client.delete(f"{USERS_ROUTE_PREFIX}/{user.id}")
+
+    # THEN the right response code is returned
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    # AND the user is removed from the database
+    statement = select(User).where(User.id == user.id)
+    deleted_user = session.exec(statement).first()
+    assert deleted_user is None

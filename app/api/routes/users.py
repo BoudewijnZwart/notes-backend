@@ -24,17 +24,27 @@ async def get_user(user_id: uuid.UUID, session: SessionDep) -> Any:
 
 @router.get("/", response_model=list[UserPublic])
 async def get_users(
-    session: SessionDep, skip: int = DEFAULT_SKIP, limit: int = DEFAULT_LIMIT,
+    session: SessionDep,
+    skip: int = DEFAULT_SKIP,
+    limit: int = DEFAULT_LIMIT,
 ) -> Any:
     """Endpoint to get all users."""
     statement = select(User).offset(skip).limit(limit)
-    users = session.exec(statement).all()
-    return users
+    return session.exec(statement).all()
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_user(new_user: UserNew, session: SessionDep):
+async def create_user(new_user: UserNew, session: SessionDep) -> None:
     """Endpoint to create a new user."""
     user = new_user.into_user()
     session.add(user)
+    session.commit()
+
+
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(user_id: uuid.UUID, session: SessionDep) -> None:
+    """Endpoint to delete a user."""
+    user = get_object_or_404(User, user_id, session)
+
+    session.delete(user)
     session.commit()
