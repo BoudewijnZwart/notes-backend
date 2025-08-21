@@ -7,8 +7,8 @@ from sqlmodel import Session
 
 from app.api.deps import get_db
 from app.main import app
-from tests.test_config import engine
 from tests.models.factories import FolderFactory, NoteFactory, TagFactory, UserFactory
+from tests.test_config import engine
 
 # Register factories as fixtures
 pytest_factoryboy.register(NoteFactory)

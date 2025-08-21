@@ -79,3 +79,5 @@ class User(UserBase, table=True):  # type: ignore[call-arg]
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
+    is_active: bool = True
+    is_superuser: bool = False

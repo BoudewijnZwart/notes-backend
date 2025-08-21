@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: EnvironmentType
     DATABASE_URL: str
     LOG_LEVEL: LOGLevel
+    SECRET_KEY: str
 
 
 settings = Settings()  # type: ignore[call-arg]
