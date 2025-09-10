@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
 from app.api.routes.notes import NOTES_ROUTE_PREFIX
-from app.models.tables import Folder, Note
+from app.models.tables import Folder, Note, User
 from tests.models.factories import NoteFactory, TagFactory
 
 
@@ -43,7 +43,7 @@ def test_create_note_correct_input(
     post_body_fixture: dict[str, Any],
     request: pytest.FixtureRequest,
     session: Session,
-    client: TestClient,
+    user_client: TestClient,
 ) -> None:
     """Test creating a note."""
     # GIVEN a request body for creating a note
@@ -54,7 +54,7 @@ def test_create_note_correct_input(
     assert session.exec(statement).first() is None
 
     # WHEN the client sends a POST request to the notes endpoint
-    response = client.post(f"{NOTES_ROUTE_PREFIX}/", json=post_body)
+    response = user_client.post(f"{NOTES_ROUTE_PREFIX}/", json=post_body)
 
     # THEN the correct status code is returned
     assert response.status_code == status.HTTP_201_CREATED
@@ -70,14 +70,16 @@ def test_create_note_correct_input(
 
 
 def test_get_note_by_id(
-    note: Note,
-    client: TestClient,
+    note_factory: NoteFactory,
+    user_client: TestClient,
+    test_user: User,
 ) -> None:
     """Test retrieving a note by ID."""
     # GIVEN a note in the database
+    note = note_factory.create(owner_id=test_user.id)
 
     # WHEN the client sends a GET request to the notes endpoint with the note ID
-    response = client.get(f"{NOTES_ROUTE_PREFIX}/{note.id}")
+    response = user_client.get(f"{NOTES_ROUTE_PREFIX}/{note.id}")
 
     # THEN the correct status code is returned
     assert response.status_code == status.HTTP_200_OK
@@ -91,14 +93,15 @@ def test_get_note_by_id(
 
 def test_get_all_notes(
     note_factory: NoteFactory,
-    client: TestClient,
+    test_user: User,
+    user_client: TestClient,
 ) -> None:
     """Test retrieving all notes in the database."""
     # GIVEN multiple notes in the database
-    notes = note_factory.create_batch(3)
+    notes = note_factory.create_batch(3, owner_id=test_user.id)
 
     # WHEN the client sends a GET request to the notes endpoint with the note ID
-    response = client.get(f"{NOTES_ROUTE_PREFIX}/")
+    response = user_client.get(f"{NOTES_ROUTE_PREFIX}/")
 
     # THEN the correct status code is returned
     assert response.status_code == status.HTTP_200_OK
@@ -109,16 +112,18 @@ def test_get_all_notes(
 
 
 def test_update_note(
-    note: Note,
+    note_factory: NoteFactory,
     post_body_simple: dict[str, Any],
-    client: TestClient,
+    user_client: TestClient,
+    test_user: User,
     session: Session,
 ) -> None:
     """Test updating a note."""
     # GIVEN a note in the database
+    note = note_factory.create(owner_id=test_user.id)
 
     # WHEN the client sends a PUT request to the notes endpoint with the note ID
-    response = client.put(f"{NOTES_ROUTE_PREFIX}/{note.id}", json=post_body_simple)
+    response = user_client.put(f"{NOTES_ROUTE_PREFIX}/{note.id}", json=post_body_simple)
 
     # THEN the correct status code is returned
     assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -130,15 +135,17 @@ def test_update_note(
 
 
 def test_delete_note(
-    note: Note,
-    client: TestClient,
+    note_factory: NoteFactory,
+    user_client: TestClient,
+    test_user: User,
     session: Session,
 ) -> None:
     """Test deleting a note."""
     # GIVEN a note in the database
+    note = note_factory.create(owner_id=test_user.id)
 
     # WHEN the client sends a DELETE request to the notes endpoint with the note ID
-    response = client.delete(f"{NOTES_ROUTE_PREFIX}/{note.id}")
+    response = user_client.delete(f"{NOTES_ROUTE_PREFIX}/{note.id}")
 
     # THEN the correct status code is returned
     assert response.status_code == status.HTTP_204_NO_CONTENT

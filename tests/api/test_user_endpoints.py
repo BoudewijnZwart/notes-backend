@@ -33,7 +33,8 @@ def test_get_user(user: User, client: TestClient) -> None:
 
 
 def test_get_multiple_users(
-    user_factory: type[UserFactory], client: TestClient,
+    user_factory: type[UserFactory],
+    client: TestClient,
 ) -> None:
     """Test get endpoint to get multiple users."""
     # GIVEN multiple users in the database
@@ -63,6 +64,7 @@ def test_get_multiple_users(
         pytest.param(
             {
                 "email": "test@gmail.com",
+                "username": "testuser",
                 "first_name": "Test",
                 "last_name": "User",
                 "password": "Testpassword123!",
@@ -73,6 +75,7 @@ def test_get_multiple_users(
         pytest.param(
             {
                 "email": "test",
+                "username": "testuser",
                 "first_name": "Test",
                 "last_name": "User",
                 "password": "Testpassword123!",
@@ -83,6 +86,7 @@ def test_get_multiple_users(
         pytest.param(
             {
                 "email": "test@email.com",
+                "username": "testuser",
                 "first_name": "Test",
                 "last_name": "User",
                 "password": "short",

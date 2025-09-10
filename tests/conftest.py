@@ -7,8 +7,10 @@ from sqlmodel import Session
 
 from app.api.deps import get_db
 from app.main import app
+from app.models.tables import User
 from tests.models.factories import FolderFactory, NoteFactory, TagFactory, UserFactory
 from tests.test_config import engine
+from tests.utils import get_auth_header_for_user
 
 # Register factories as fixtures
 pytest_factoryboy.register(NoteFactory)
@@ -45,3 +47,17 @@ def client_fixture(session: Session) -> Iterator[TestClient]:
     client = TestClient(app)
     yield client
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(name="test_user")
+def test_user_fixture(user_factory: UserFactory) -> User:
+    """Fixture to provide a test user."""
+    return user_factory.create()
+
+
+@pytest.fixture(name="user_client")
+def user_client_fixture(client: TestClient, test_user: User) -> Iterator[TestClient]:
+    """Fixture to provide a FastAPI test client with a logged-in user."""
+    headers = get_auth_header_for_user(test_user.id)
+    client.headers.update(headers)
+    return client

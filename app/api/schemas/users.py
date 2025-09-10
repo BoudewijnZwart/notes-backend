@@ -17,6 +17,7 @@ class UserNew(UserBase):
         """Create a User from a NewUser object."""
         return User(
             email=self.email,
+            username=self.username,
             first_name=self.first_name,
             last_name=self.last_name,
             hashed_password=get_password_hash(self.password),
@@ -35,6 +36,7 @@ class UserPublic(UserBase):
         """Create a UserPublic from a User object."""
         return cls(
             id=user.id,
+            username=user.username,
             email=user.email,
             first_name=user.first_name,
             last_name=user.last_name,
