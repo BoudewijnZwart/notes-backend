@@ -35,4 +35,5 @@ class TagPublic(TagBase):
             full_name=tag.get_full_name(),
             parent_id=tag.parent_id,
             child_ids=[child.id for child in tag.child_tags],
+            owner_id=tag.owner_id,
         )
