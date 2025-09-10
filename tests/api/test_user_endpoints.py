@@ -11,11 +11,12 @@ from tests.models.factories import UserFactory
 from tests.typedefs import Outcome
 
 
-def test_get_user(user: User, client: TestClient) -> None:
+def test_get_user(user: User, superuser_client: TestClient) -> None:
     """Test get endpoint to get a user by ID."""
     # GIVEN a user in the database
 
     # AND a client
+    client = superuser_client
 
     # WHEN a get request is made to the endpoint
     response = client.get(f"{USERS_ROUTE_PREFIX}/{user.id}")

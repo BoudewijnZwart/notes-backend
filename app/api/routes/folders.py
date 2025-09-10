@@ -15,7 +15,9 @@ router = APIRouter(prefix=FOLDER_ROUTE_PREFIX, tags=["folders"])
 
 @router.get("/{folder_id}", response_model=FolderPublic)
 async def get_folder_by_id(
-    folder_id: int, user: CurrentUser, session: SessionDep,
+    folder_id: int,
+    user: CurrentUser,
+    session: SessionDep,
 ) -> Any:
     """Endpoint to get a folder by ID."""
     return get_object_or_404_by_owner(Folder, folder_id, user.id, session)
@@ -29,7 +31,9 @@ async def get_all_folders(user: CurrentUser, session: SessionDep) -> Any:
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_folder(
-    folder_request: FolderNew, user: CurrentUser, session: SessionDep,
+    folder_request: FolderNew,
+    user: CurrentUser,
+    session: SessionDep,
 ) -> None:
     """Endpoint to create a folder."""
     folder_data = folder_request.model_dump()

@@ -55,9 +55,26 @@ def test_user_fixture(user_factory: UserFactory) -> User:
     return user_factory.create()
 
 
+@pytest.fixture(name="superuser")
+def superuser_fixture(user_factory: UserFactory) -> User:
+    """Fixture to provide a superuser."""
+    return user_factory.create(is_superuser=True)
+
+
 @pytest.fixture(name="user_client")
 def user_client_fixture(client: TestClient, test_user: User) -> Iterator[TestClient]:
     """Fixture to provide a FastAPI test client with a logged-in user."""
     headers = get_auth_header_for_user(test_user.id)
+    client.headers.update(headers)
+    return client
+
+
+@pytest.fixture(name="superuser_client")
+def superuser_client_fixture(
+    client: TestClient,
+    superuser: User,
+) -> Iterator[TestClient]:
+    """Fixture to provide a FastAPI test client with a logged-in superuser."""
+    headers = get_auth_header_for_user(superuser.id)
     client.headers.update(headers)
     return client

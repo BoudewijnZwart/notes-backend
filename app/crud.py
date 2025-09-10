@@ -29,7 +29,8 @@ def get_object_or_404_by_owner[T = SQLModel](
 ) -> T:
     """Get an object by primary key and owner id if it exists."""
     statement = select(obj_type).where(
-        obj_type.id == obj_id, obj_type.owner_id == owner_id,
+        obj_type.id == obj_id,
+        obj_type.owner_id == owner_id,
     )
     if (obj := session.exec(statement).first()) is None:
         raise HTTPException(
