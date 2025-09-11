@@ -3,7 +3,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
-from app.api.routes.tags import TAG_ROUTE_PREFIX
+from app.api.routes.constants import TAG_ROUTE_PREFIX
 from app.models.tables import Tag, User
 from tests.models.factories import TagFactory
 

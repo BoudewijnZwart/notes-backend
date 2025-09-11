@@ -5,7 +5,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
-from app.api.routes.notes import NOTES_ROUTE_PREFIX
+from app.api.routes.constants import NOTES_ROUTE_PREFIX
 from app.models.tables import Folder, Note, User
 from tests.models.factories import NoteFactory, TagFactory
 

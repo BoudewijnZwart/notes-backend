@@ -4,6 +4,7 @@ from fastapi import APIRouter, status
 from sqlmodel import select
 
 from app.api.deps import SessionDep
+from app.api.routes.constants import TAG_ROUTE_PREFIX
 from app.api.schemas.tags import TagNew, TagPublic
 from app.crud import (
     get_object_or_404_by_owner,
@@ -11,8 +12,6 @@ from app.crud import (
 )
 from app.models.tables import Tag
 from app.security import CurrentUser
-
-TAG_ROUTE_PREFIX = "/tags"
 
 router = APIRouter(prefix=TAG_ROUTE_PREFIX, tags=["tags"])
 

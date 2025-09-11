@@ -5,11 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.deps import SessionDep
+from app.api.routes.constants import LOGIN_ROUTE_PREFIX
 from app.api.schemas.tokens import Token
 from app.config import settings
 from app.security import authenticate_user, create_access_token
-
-LOGIN_ROUTE_PREFIX = "/login"
 
 router = APIRouter(prefix=LOGIN_ROUTE_PREFIX, tags=["login"])
 

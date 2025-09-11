@@ -5,7 +5,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
-from app.api.routes.folders import FOLDER_ROUTE_PREFIX
+from app.api.routes.constants import FOLDER_ROUTE_PREFIX
 from app.models.tables import Folder, User
 from tests.models.factories import FolderFactory
 

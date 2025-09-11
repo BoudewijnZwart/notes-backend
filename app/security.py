@@ -11,6 +11,7 @@ from pydantic import ValidationError
 from sqlmodel import Session, select
 
 from app.api.deps import SessionDep
+from app.api.routes.constants import LOGIN_ROUTE_PREFIX
 from app.api.schemas.tokens import TokenPayload
 from app.config import settings
 from app.models.tables import User
@@ -50,7 +51,7 @@ def authenticate_user(session: Session, username: str, password: str) -> bool | 
     return user
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{LOGIN_ROUTE_PREFIX}/token")
 
 
 TokenDep = Annotated[str, Depends(oauth2_scheme)]

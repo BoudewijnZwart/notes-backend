@@ -5,13 +5,12 @@ from fastapi import APIRouter, status
 from sqlmodel import select
 
 from app.api.deps import SessionDep
+from app.api.routes.constants import USERS_ROUTE_PREFIX
 from app.api.schemas.users import UserNew, UserPublic
 from app.crud import get_object_or_404
 from app.models.tables import User
 from app.security import CurrentActiveSuperUser
 from app.shared.constants import DEFAULT_LIMIT, DEFAULT_SKIP
-
-USERS_ROUTE_PREFIX = "/users"
 
 router = APIRouter(prefix=USERS_ROUTE_PREFIX, tags=["users"])
 

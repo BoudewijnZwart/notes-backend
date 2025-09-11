@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    FIRST_SUPERUSER_USERNAME: str
+    FIRST_SUPERUSER_PASSWORD: str
+    FIRST_SUPERUSER_EMAIL: str
+
 
 settings = Settings()  # type: ignore[call-arg]
 

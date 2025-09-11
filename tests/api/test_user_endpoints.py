@@ -5,7 +5,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
-from app.api.routes.users import USERS_ROUTE_PREFIX
+from app.api.routes.constants import USERS_ROUTE_PREFIX
 from app.models.tables import User
 from tests.models.factories import UserFactory
 from tests.typedefs import Outcome
@@ -35,24 +35,23 @@ def test_get_user(user: User, superuser_client: TestClient) -> None:
 
 def test_get_multiple_users(
     user_factory: type[UserFactory],
-    client: TestClient,
+    superuser_client: TestClient,
 ) -> None:
     """Test get endpoint to get multiple users."""
     # GIVEN multiple users in the database
     users = user_factory.create_batch(5)
 
     # WHEN a get request is made to the endpoint
-    response = client.get(USERS_ROUTE_PREFIX)
+    response = superuser_client.get(USERS_ROUTE_PREFIX)
 
     # THEN the correct status code is returned
     assert response.status_code == status.HTTP_200_OK
 
     # AND the response data matches the user data
     response_body = response.json()
-    assert len(response_body) == len(users)
-    for user_data in response_body:
-        user = next((u for u in users if str(u.id) == user_data["id"]), None)
-        assert user is not None
+    assert len(response_body) >= len(users)
+    for user in users:
+        user_data = next((u for u in response_body if str(user.id) == u["id"]), None)
         assert user_data["email"] == user.email
         assert user_data["first_name"] == user.first_name
         assert user_data["last_name"] == user.last_name
@@ -101,13 +100,13 @@ def test_create_user(
     new_user_data: dict[str, Any],
     expected_outcome: Outcome,
     session: Session,
-    client: TestClient,
+    superuser_client: TestClient,
 ) -> None:
     """Test creating a user using a POST request."""
     # GIVEN some data for creating a new user
 
     # WHEN a POST request is made to create the user
-    response = client.post(f"{USERS_ROUTE_PREFIX}/", json=new_user_data)
+    response = superuser_client.post(f"{USERS_ROUTE_PREFIX}/", json=new_user_data)
 
     # THEN the correct status code is returned
     match expected_outcome:
@@ -126,14 +125,16 @@ def test_create_user(
             assert user is None
 
 
-def test_delete_user(user: User, client: TestClient, session: Session) -> None:
+def test_delete_user(
+    user: User, superuser_client: TestClient, session: Session,
+) -> None:
     """Test deleting a user using a DELETE request."""
     # GIVEN a user in the database
 
     # AND a client
 
     # WHEN a delete request is sent to the delete endpoint
-    response = client.delete(f"{USERS_ROUTE_PREFIX}/{user.id}")
+    response = superuser_client.delete(f"{USERS_ROUTE_PREFIX}/{user.id}")
 
     # THEN the right response code is returned
     assert response.status_code == status.HTTP_204_NO_CONTENT

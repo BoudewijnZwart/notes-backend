@@ -4,12 +4,11 @@ from fastapi import APIRouter, HTTPException, Path, status
 from sqlmodel import select
 
 from app.api.deps import SessionDep
+from app.api.routes.constants import NOTES_ROUTE_PREFIX
 from app.api.schemas.notes import NoteNew, NotePublic
 from app.crud import get_object_or_404
 from app.models.tables import Note, Tag
 from app.security import CurrentUser
-
-NOTES_ROUTE_PREFIX = "/notes"
 
 router = APIRouter(prefix=NOTES_ROUTE_PREFIX, tags=["notes"])
 

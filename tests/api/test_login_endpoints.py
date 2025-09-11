@@ -1,7 +1,7 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from app.api.routes.login import LOGIN_ROUTE_PREFIX
+from app.api.routes.constants import LOGIN_ROUTE_PREFIX
 from tests.constants import TEST_USER_PASSWORD
 from tests.models.factories import UserFactory
 

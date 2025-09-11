@@ -3,12 +3,11 @@ from typing import Any
 from fastapi import APIRouter, status
 
 from app.api.deps import SessionDep
+from app.api.routes.constants import FOLDER_ROUTE_PREFIX
 from app.api.schemas.folders import FolderNew, FolderPublic
 from app.crud import get_object_or_404_by_owner, get_objects_by_owner
 from app.models.tables import Folder
 from app.security import CurrentUser
-
-FOLDER_ROUTE_PREFIX = "/folders"
 
 router = APIRouter(prefix=FOLDER_ROUTE_PREFIX, tags=["folders"])
 
