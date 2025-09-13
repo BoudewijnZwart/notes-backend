@@ -3,20 +3,22 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
-from app.api.routes.tags import TAG_ROUTE_PREFIX
-from app.models.tables import Tag
+from app.api.routes.constants import TAG_ROUTE_PREFIX
+from app.models.tables import Tag, User
 from tests.models.factories import TagFactory
 
 
 def test_get_tag_by_id(
-    tag: Tag,
-    client: TestClient,
+    tag_factory: TagFactory,
+    test_user: User,
+    user_client: TestClient,
 ) -> None:
     """Test retrieving a tag by ID."""
-    # GIVEN a tag in the database
+    # GIVEN a tag in the database owned by the test user
+    tag = tag_factory.create(owner_id=test_user.id)
 
     # WHEN the client sends a GET request to the tags endpoint with the tag ID
-    response = client.get(f"{TAG_ROUTE_PREFIX}/{tag.id}")
+    response = user_client.get(f"{TAG_ROUTE_PREFIX}/{tag.id}")
 
     # THEN the correct status code is returned
     assert response.status_code == status.HTTP_200_OK
@@ -27,16 +29,17 @@ def test_get_tag_by_id(
     assert response_data["name"] == tag.name
 
 
-def get_all_tags(
+def test_get_all_tags(
     tag_factory: TagFactory,
-    client: TestClient,
+    test_user: User,
+    user_client: TestClient,
 ) -> None:
     """Test retrieving all tags in the database."""
     # GIVEN multiple tags in the database
-    tags = tag_factory.create_batch(3)
+    tags = tag_factory.create_batch(3, owner_id=test_user.id)
 
     # WHEN the client sends a GET request to the tags endpoint
-    response = client.get(f"{TAG_ROUTE_PREFIX}/")
+    response = user_client.get(f"{TAG_ROUTE_PREFIX}/")
 
     # THEN the correct status code is returned
     assert response.status_code == status.HTTP_200_OK
@@ -50,9 +53,9 @@ def get_all_tags(
 
 
 @pytest.fixture(name="existing_tag")
-def existing_tag_fixture(tag_factory: TagFactory) -> Tag:
+def existing_tag_fixture(tag_factory: TagFactory, test_user: User) -> Tag:
     """Fixture to create an existing tag."""
-    return tag_factory.create(name="Existing Tag")
+    return tag_factory.create(name="Existing Tag", owner_id=test_user.id)
 
 
 @pytest.mark.parametrize(
@@ -79,13 +82,16 @@ def existing_tag_fixture(tag_factory: TagFactory) -> Tag:
 def test_create_tag(
     post_body: dict[str, str],
     expected_tag_names: list[str],
-    client: TestClient,
+    test_user: User,
+    user_client: TestClient,
     session: Session,
 ) -> None:
     """Test creating a new tag."""
-    # GIVEN a request body for creating a tag
+    # GIVEN a request body for creating a tag with the owner id
+    post_body["owner_id"] = str(test_user.id)
 
     # AND a client to send requests
+    client = user_client
 
     # WHEN the client sends a POST request to the tags endpoint
     response = client.post(f"{TAG_ROUTE_PREFIX}/", json=post_body)
@@ -101,14 +107,14 @@ def test_create_tag(
 
 def test_delete_tag(
     existing_tag: Tag,
-    client: TestClient,
+    user_client: TestClient,
     session: Session,
 ) -> None:
     """Test deleting a tag by ID."""
     # GIVEN an existing tag in the database
 
     # WHEN the client sends a DELETE request to the tags endpoint with the tag ID
-    response = client.delete(f"{TAG_ROUTE_PREFIX}/{existing_tag.id}")
+    response = user_client.delete(f"{TAG_ROUTE_PREFIX}/{existing_tag.id}")
 
     # THEN the correct status code is returned
     assert response.status_code == status.HTTP_204_NO_CONTENT

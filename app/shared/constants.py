@@ -1,4 +1,13 @@
 MIN_NAME_LEN = 2
 MAX_NAME_LEN = 128
 
+# Text field
 MAX_TEXT_FIELD_LEN = 65536
+
+# endpoint defaults
+DEFAULT_SKIP = 0
+DEFAULT_LIMIT = None
+
+# security
+MIN_PASSWORD_LEN = 8
+MAX_PASSWORD_LEN = 128

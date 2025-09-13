@@ -1,0 +1,5 @@
+FOLDER_ROUTE_PREFIX = "/folders"
+LOGIN_ROUTE_PREFIX = "/login"
+NOTES_ROUTE_PREFIX = "/notes"
+TAG_ROUTE_PREFIX = "/tags"
+USERS_ROUTE_PREFIX = "/users"

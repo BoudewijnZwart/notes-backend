@@ -1,3 +1,5 @@
+import uuid
+
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
@@ -17,18 +19,20 @@ class NoteBase(SQLModel):
 class TagBase(SQLModel):
     """Base model for a tag."""
 
+    owner_id: uuid.UUID | None = Field(foreign_key="user.id")
+
 
 class FolderBase(SQLModel):
     """Base model for a folder."""
 
     name: str = Field(max_length=128)
+    owner_id: uuid.UUID | None = Field(foreign_key="user.id")
 
 
 class UserBase(SQLModel):
     """Base model for a user."""
 
-    email: EmailStr = Field(unique=True, index=True, max_length=255)
-    is_active: bool = True
-    is_superuser: bool = False
+    username: str = Field(unique=True, index=True, max_length=255)
+    email: EmailStr = Field(index=True, max_length=255)
     first_name: str | None = Field(default=None, max_length=255)
     last_name: str | None = Field(default=None, max_length=255)

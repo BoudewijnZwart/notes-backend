@@ -1,6 +1,9 @@
+from typing import Any
+
 import factory
 
 from app.models.tables import Folder, Note, Tag, User
+from app.security import get_password_hash
 from tests.factories import ModelFactory
 
 
@@ -32,8 +35,16 @@ class UserFactory(ModelFactory):
 
     username = factory.Faker("user_name")
     email = factory.Faker("email")
-    hashed_password = factory.Faker("password")
+    hashed_password = factory.LazyFunction(lambda: get_password_hash("Password123!"))
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
     is_active = True
     is_superuser = False
+
+    @classmethod
+    def create(cls, **kwargs: Any) -> User:
+        """Override create to accept plain 'password' and hash it."""
+        password = kwargs.pop("password", None)
+        if password:
+            kwargs["hashed_password"] = get_password_hash(password)
+        return super().create(**kwargs)

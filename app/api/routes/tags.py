@@ -4,19 +4,22 @@ from fastapi import APIRouter, status
 from sqlmodel import select
 
 from app.api.deps import SessionDep
+from app.api.routes.constants import TAG_ROUTE_PREFIX
 from app.api.schemas.tags import TagNew, TagPublic
-from app.crud import get_object_or_404, get_tag_by_parent_and_name
+from app.crud import (
+    get_object_or_404_by_owner,
+    get_tag_by_parent_and_name,
+)
 from app.models.tables import Tag
-
-TAG_ROUTE_PREFIX = "/tags"
+from app.security import CurrentUser
 
 router = APIRouter(prefix=TAG_ROUTE_PREFIX, tags=["tags"])
 
 
 @router.get("/{tag_id}", response_model=TagPublic)
-async def get_tag(tag_id: int, session: SessionDep) -> Tag:
+async def get_tag(tag_id: int, user: CurrentUser, session: SessionDep) -> Tag:
     """Endpoint to get a tag by ID."""
-    tag = get_object_or_404(Tag, tag_id, session)
+    tag = get_object_or_404_by_owner(Tag, tag_id, user.id, session)
     return TagPublic.from_tag(tag)
 
 
@@ -51,8 +54,8 @@ async def create_tag(tag_request: TagNew, session: SessionDep) -> None:
 
 
 @router.delete("/{tag_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_tag(tag_id: int, session: SessionDep) -> None:
+async def delete_tag(tag_id: int, user: CurrentUser, session: SessionDep) -> None:
     """Endpoint to delete a tag by ID."""
-    tag = get_object_or_404(Tag, tag_id, session)
+    tag = get_object_or_404_by_owner(Tag, tag_id, user.id, session)
     session.delete(tag)
     session.commit()

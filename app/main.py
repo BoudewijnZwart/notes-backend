@@ -1,17 +1,30 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
 from app.api.main import api_router
 from app.config import settings
-from app.database import create_db_and_tables
+from app.startup import startup
 from app.typedefs import EnvironmentType
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):  # noqa: ARG001, ANN201
+    """Lifespan context manager for FastAPI app."""
+    # Startup code
+    startup()
+
+    yield
+    # Shutdown code (if any) can be added here
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 app.include_router(api_router)
 
-create_db_and_tables()
 
+# use uvicorn to run the app in development
 if (__name__ == "__main__") and (settings.ENVIRONMENT == EnvironmentType.DEVELOPMENT):
     import uvicorn
 
